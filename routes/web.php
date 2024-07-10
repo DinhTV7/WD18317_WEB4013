@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admins\SanPhamController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\SanPhamController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,8 +39,10 @@ Route::get('/', function () {
 // ]);
 
 // Tạo 1 route trỏ đến 1 hàm trong controller
-Route::get('/san_pham', [SanPhamController::class, 'index']);
-
 Route::get('/home', [HomeController::class, 'home']);
 
 Route::get('/client', [HomeController::class, 'index']);
+
+// Route resouce
+Route::get('sanpham/test', [SanPhamController::class, 'test'])->name('sanpham.test');
+Route::resource('sanpham', SanPhamController::class);
