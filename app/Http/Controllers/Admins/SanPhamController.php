@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 class SanPhamController extends Controller
 {
     // Sử dụng khi dùng Raw Query hoặc Query Builder
-    // public $san_pham;
+    public $san_pham;
 
-    // public function __construct()
-    // {
-    //     $this->san_pham = new SanPham();
-    // }
+    public function __construct()
+    {
+        $this->san_pham = new SanPham();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -37,7 +37,9 @@ class SanPhamController extends Controller
      */
     public function create()
     {
-        dd("Đây là create resource");
+        $title = "Thêm sản phẩm";
+
+        return view('admins.sanpham.create', compact('title'));
     }
 
     /**
@@ -45,7 +47,30 @@ class SanPhamController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Xem dữ liệu đẩy lên
+        // $params = $request->post();
+        // dd($params);
+
+        if ($request->isMethod('POST')) {
+            // Cách 1:
+            // $params = $request->post();
+            // unset($params['_token']);
+
+            // Cách 2:
+            $params = $request->except('_token');
+            // dd($params);
+
+            // Sử dụng Query Builder
+            // $this->san_pham->createProduct($params);
+
+            // Sử dụng Eloquent
+            SanPham::create($params);
+
+            // Sau khi thêm sẽ quay về trang danh sách và hiển thị
+            // thông báo thành công
+
+            return redirect()->route('sanpham.index')->with('success', 'Thêm sản phầm thành công!');
+        }
     }
 
     /**
