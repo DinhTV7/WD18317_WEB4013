@@ -63,6 +63,15 @@ class SanPhamController extends Controller
             // Sử dụng Query Builder
             // $this->san_pham->createProduct($params);
 
+            // Xử lý ảnh
+            if ($request->hasFile('hinh_anh')) {
+                $filename = $request->file('hinh_anh')->store('uploads/sanpham', 'public');
+            } else {
+                $filename = null;
+            }
+
+            $params['hinh_anh'] = $filename;
+
             // Sử dụng Eloquent
             SanPham::create($params);
 
@@ -86,7 +95,16 @@ class SanPhamController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $title = "Chỉnh sửa thông tin sản phẩm";
+
+        // Lấy thông tin chi tiết sản phẩm
+        // Sử dụng Query Builder
+        $sanPham = $this->san_pham->getDetailProduct($id);
+
+        // Bằng Eloquent
+        // $sanPham = SanPham::findOrFail($id);
+
+        return view('admins.sanpham.update', compact('title', 'sanPham'));
     }
 
     /**
