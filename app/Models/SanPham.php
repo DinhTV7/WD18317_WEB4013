@@ -39,6 +39,14 @@ class SanPham extends Model
         return $san_pham;
     }
 
+    public function updateProduct($id, $params) {
+        DB::table('san_phams')->where('id', $id)->update($params);
+    }
+
+    public function deleteProduct($id) {
+        DB::table('san_phams')->where('id', $id)->delete();
+    }
+
     // Cách 3: Sử dụng Eloquent
     protected $table = 'san_phams';
 

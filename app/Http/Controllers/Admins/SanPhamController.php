@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admins;
 
-use App\Http\Controllers\Controller;
 use App\Models\SanPham;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\SanPhamRequest;
+use Illuminate\Support\Facades\Storage;
 
 class SanPhamController extends Controller
 {
@@ -45,7 +47,7 @@ class SanPhamController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SanPhamRequest $request)
     {
         // Xem dữ liệu đẩy lên
         // $params = $request->post();
@@ -110,9 +112,36 @@ class SanPhamController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(SanPhamRequest $request, string $id)
     {
-        //
+        if ($request->isMethod('PUT')) {
+            $params = $request->except('_token', '_method');
+            // Sử dụng Eloquent
+            // $sanPham = SanPham::findOrFail($id);
+
+            // Sử dụng Query Builder
+            $sanPham = $this->san_pham->getDetailProduct($id);
+
+            // Xử lý hình ảnh
+            if ($request->hasFile('hinh_anh')) {
+                // Nếu có đẩy ảnh mới thì xóa ảnh cũ và lấy ảnh mới thêm vào DB
+                if ($sanPham->hinh_anh) {
+                    Storage::disk('public')->delete($sanPham->hinh_anh);
+                }
+                $params['hinh_anh'] = $request->file('hinh_anh')->store('uploads/sanpham', 'public');
+            } else {
+                $params['hinh_anh'] = $sanPham->hinh_anh;
+            }
+
+            // Xử lý cập nhật thông tin
+            // Eloquent
+            // $sanPham->update($params);
+
+            // Query Builder
+            $this->san_pham->updateProduct($id, $params);
+
+            return redirect()->route('sanpham.index')->with('success', 'Cập nhật sản phầm thành công!');
+        }
     }
 
     /**
@@ -124,7 +153,8 @@ class SanPhamController extends Controller
     }
 
     // Phương thức mới
-    public function test() {
+    public function test()
+    {
         dd("Đây là phương thức mới");
     }
 }
