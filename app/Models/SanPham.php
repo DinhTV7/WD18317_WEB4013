@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SanPham extends Model
 {
@@ -48,6 +49,8 @@ class SanPham extends Model
     }
 
     // Cách 3: Sử dụng Eloquent
+    use SoftDeletes;
+
     protected $table = 'san_phams';
 
     protected $fillable = [
