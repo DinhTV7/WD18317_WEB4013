@@ -10,7 +10,5 @@
         Chào mừng đến với bình nguyên vô tận <br/>
         Hôm này là ngày <?= date('d/m/Y') ?>
     </p>
-    <h4><?= $title ?></h4>
-    <p><?= $text ?></p>
 </body>
 </html>

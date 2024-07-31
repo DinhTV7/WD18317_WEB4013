@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admins;
 use App\Models\SanPham;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\SanPhamRequest;
+use App\Mail\MailConfirm;
 use Illuminate\Support\Facades\Storage;
 
 class SanPhamController extends Controller
@@ -88,10 +90,15 @@ class SanPhamController extends Controller
             $params['hinh_anh'] = $filename;
 
             // Sử dụng Eloquent
-            SanPham::create($params);
+            $sanPham = SanPham::create($params);
 
             // Sau khi thêm sẽ quay về trang danh sách và hiển thị
             // thông báo thành công
+
+            // Sau khi thêm sản phẩm thành công thì gửi mail thông báo 
+            // kèm theo thông tín sản phẩm đó
+
+            Mail::to('dinhtv7@fpt.edu.vn')->send(new MailConfirm($sanPham));
 
             return redirect()->route('sanpham.index')->with('success', 'Thêm sản phầm thành công!');
         }
