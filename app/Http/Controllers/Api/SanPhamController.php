@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\SanPhamResource;
 use App\Models\SanPham;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\SanPhamResource;
+use Illuminate\Support\Facades\Storage;
 
 class SanPhamController extends Controller
 {
@@ -39,8 +40,6 @@ class SanPhamController extends Controller
         if ($request->isMethod('POST')) {
             $params = $request->all();
 
-            dd($params);
-
             if ($request->hasFile('hinh_anh')) {
                 $filename = $request->file('hinh_anh')->store('uploads/sanpham', 'public');
             } else {
@@ -51,7 +50,7 @@ class SanPhamController extends Controller
 
             $sanPham = SanPham::create($params);
 
-            
+            return new SanPhamResource($sanPham);
         }
     }
 
@@ -69,7 +68,20 @@ class SanPhamController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        if ($request->isMethod('PUT')) {
+            $params = $request->all();
+            $sanPham = SanPham::findOrFail($id);
+            if ($request->hasFile('hinh_anh')) {
+                if ($sanPham->hinh_anh) {
+                    Storage::disk('public')->delete($sanPham->hinh_anh);
+                }
+                $params['hinh_anh'] = $request->file('hinh_anh')->store('uploads/sanpham', 'public');
+            } else {
+                $params['hinh_anh'] = $sanPham->hinh_anh;
+            }
+            $sanPham->update($params);
+            return new SanPhamResource($sanPham);
+        }
     }
 
     /**
@@ -77,6 +89,14 @@ class SanPhamController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $sanPham = SanPham::query()->findOrFail($id);
+
+        $sanPham->delete();
+
+        if ($sanPham->hinh_anh && Storage::disk('public')->exists($sanPham->hinh_anh)) {
+            Storage::disk('public')->delete($sanPham->hinh_anh);
+        }
+
+        return response()->json(['message' => 'Xóa sảm phẩm thành công'], 200);
     }
 }
